@@ -1,0 +1,35 @@
+<?php 
+
+session_start(); 
+$db = new PDO('mysql:host=localhost;dbname=inject_db','root','');
+include "config.php";
+
+if (isset($_POST['email']) && isset($_POST['password'])){
+
+    $email = $_POST['email'];
+    $pass = $_POST['password'];
+
+        $sql2 = $db->prepare("select * FROM users_tbl WHERE email= :email");        
+        $sql = "select * FROM users_tbl WHERE email='$email' AND pass='$pass'";
+
+        $sql2->execute([ ':email' => $email ]);
+        $row1 = $sql2->fetch(PDO::FETCH_ASSOC);
+
+        $result = mysqli_query($conn, $sql);
+        $row =mysqli_fetch_assoc($result);
+ 
+        if($row1['pass'] === $pass){
+            $_SESSION['email'] = $email;
+            $_SESSION['password'] = $pass;
+            header("Location: home.php");
+        }else{
+            $_SESSION['flash_message'] = "Access Denied!";
+            header("Location: index.php");
+        }
+
+}else{
+    header("Location: index.php");
+    exit();
+
+}
+?>
